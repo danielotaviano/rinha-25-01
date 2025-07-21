@@ -1,0 +1,53 @@
+services:
+  backend1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - backend
+      - payment-processor
+    environment:
+      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
+      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
+      - LEADER=true
+      - TCP_SOCKET_PATH=/shared_socket/node_socket.sock
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: "175MB"
+    ports:
+      - "9999:9999"
+    volumes:
+      - shared_socket:/shared_socket
+    
+  backend2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: "service:backend1"
+    environment:
+      - PAYMENT_PROCESSOR_URL_DEFAULT=http://payment-processor-default:8080
+      - PAYMENT_PROCESSOR_URL_FALLBACK=http://payment-processor-fallback:8080
+      - LEADER=false
+      - TCP_SOCKET_PATH=/shared_socket/node_socket.sock
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: "175MB"
+    depends_on:
+      - backend1
+    volumes:
+      - shared_socket:/shared_socket
+
+
+
+networks:
+  backend:
+    driver: bridge
+  payment-processor:
+    external: true
+
+volumes:
+  shared_socket:
