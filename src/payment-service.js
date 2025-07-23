@@ -1,5 +1,5 @@
 import { healthcheckState, decidePaymentService } from './health-check.js';
-import { config } from './config.js';
+import { config, resolvedPaymentProcessors } from './config.js';
 import { randomUUID } from 'node:crypto';
 
 export const payments = [];
@@ -44,8 +44,8 @@ export async function handlePaymentJob({ data }) {
   }
 
   const endpointUrl = serviceName === 'default'
-    ? config.paymentProcessors.default.paymentEndpoint
-    : config.paymentProcessors.fallback.paymentEndpoint
+    ? resolvedPaymentProcessors.default.paymentEndpoint
+    : resolvedPaymentProcessors.fallback.paymentEndpoint
 
   const body = JSON.stringify({
     correlationId,

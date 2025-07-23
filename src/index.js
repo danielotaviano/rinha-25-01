@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import { config } from "./config.js";
+import { config, initializeResolvedUrls } from "./config.js";
 import { checkHealthcheck } from "./health-check.js";
 import { createHttpServer } from "./http-server.js";
 import { processRetryqueue } from "./payment-service.js";
@@ -7,6 +7,9 @@ import { TcpCommunication } from "./tcp-communication.js";
 
 console.log('SERVER ID:', config.server.id);
 console.log('INIT DATE:', config.server.initDate);
+
+// Initialize DNS resolution before starting servers
+await initializeResolvedUrls();
 
 const tcpCommunication = new TcpCommunication();
 

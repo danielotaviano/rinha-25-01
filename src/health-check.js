@@ -1,4 +1,4 @@
-import { config } from './config.js'
+import { resolvedPaymentProcessors } from './config.js'
 
 export const healthcheckState = {
   default: {
@@ -30,8 +30,8 @@ export async function checkHealthcheck(notifyTcpSockets) {
     const headers = { 'Content-Type': 'application/json' };
 
     const promises = [
-      fetch(config.paymentProcessors.default.healthEndpoint, { headers }).then(res => res.json()),
-      fetch(config.paymentProcessors.fallback.healthEndpoint, { headers }).then(res => res.json())
+      fetch(resolvedPaymentProcessors.default.healthEndpoint, { headers }).then(res => res.json()),
+      fetch(resolvedPaymentProcessors.fallback.healthEndpoint, { headers }).then(res => res.json())
     ];
 
     const [defaultResponse, fallbackResponse] = await Promise.all(promises);
