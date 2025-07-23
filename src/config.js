@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { resolvePaymentProcessorUrls } from './dns-resolver.js';
 
 export const config = {
   server: {
@@ -22,4 +23,13 @@ export const config = {
       paymentEndpoint: `${process.env.PAYMENT_PROCESSOR_URL_FALLBACK}/payments`
     }
   }
+}
+
+// Stores the resolved payment processor URLs (set during startup)
+export let resolvedPaymentProcessors = null;
+
+export async function initializeResolvedUrls() {
+  console.log('Initializing DNS resolution for payment processors...');
+  resolvedPaymentProcessors = await resolvePaymentProcessorUrls(config.paymentProcessors);
+  console.log('DNS resolution completed.');
 }
